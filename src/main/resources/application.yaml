@@ -5,12 +5,25 @@ spring:
   profiles:
     active: dev
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ENC(62+F0/iKBeve7kmYKtDY7/kUL9j/YI8nKn4SWV1kK+fFWgYkUKpFk3FRnWXxBDxT9cUWlcq+BGY3QmsNSdS0ZoX3can/Sbas/FTp2Qou4FJ4unF3SrWyfnM0LrKI0SupgcQlaebwF8IL/LGUmnf8zA==)
+            client-secret: ENC(ERJRiuX2DRj2dLFmCrehpYDb4fQ45wXaHXuwBzb43C9bo+ZaB3DKcDVw3RU7RUBURCiB4MMUzqPko+cKsOTpjhKb0o8s0PqJcpQ1F1RSyKw=)
+            scope:
+              - profile
+              - email
+
 # 로컬 개발 환경 (dev)
 ---
 spring:
   config:
     activate:
       on-profile: dev
+
+  front: "http://localhost:5173"
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
