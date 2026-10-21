@@ -1,6 +1,6 @@
-package com.jin.miracle.user.util;
+package com.jin.miracle.util;
 
-import com.jin.miracle.user.file.FileType;
+import com.jin.miracle.file.FileType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -12,7 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import static com.jin.miracle.user.file.FileType.BASE_DIR;
+import static com.jin.miracle.file.FileType.BASE_DIR;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
 @Slf4j

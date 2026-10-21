@@ -1,4 +1,4 @@
-package com.jin.miracle.user.file;
+package com.jin.miracle.file;
 
 import lombok.Getter;
 

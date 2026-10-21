@@ -3,7 +3,7 @@ package com.jin.miracle.config.security;
 import com.jin.miracle.user.entity.Platform;
 import com.jin.miracle.user.entity.Users;
 import com.jin.miracle.user.repo.UserRepo;
-import com.jin.miracle.user.util.FileUtils;
+import com.jin.miracle.util.FileUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
