@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 @Configuration
@@ -23,14 +24,16 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
-        String loginCallback = front + "/login/callback";
+        String sucessTarget = front + "/login/callback";
+        String failTarget = front + "/login?error=true";
 
         return http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(o -> o
-                        .successHandler(new SimpleUrlAuthenticationSuccessHandler(loginCallback))
+                        .successHandler(new SimpleUrlAuthenticationSuccessHandler(sucessTarget))
+                        .failureHandler(new SimpleUrlAuthenticationFailureHandler(failTarget))
                         .userInfoEndpoint(u -> u.userService(userService)))
                 .build();
     }
