@@ -16,6 +16,10 @@ spring:
               - profile
               - email
 
+jwt:
+  private.key: classpath:keys/app.key
+  public.key: classpath:keys/app.pub
+
 # 로컬 개발 환경 (dev)
 ---
 spring:
