@@ -25,9 +25,15 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -50,6 +56,7 @@ public class SecurityConfig {
         String failTarget = front + "/login?error=true";
 
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated())
@@ -74,5 +81,34 @@ public class SecurityConfig {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(this.key).build();
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>());
         return decoder;
+    }
+
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // 허용할 Origin 설정
+        List<String> allowedOrigins = new ArrayList<>();
+        allowedOrigins.add("http://localhost:5173");
+        configuration.setAllowedOrigins(allowedOrigins);
+
+        // 허용할 HTTP 메서드 설정
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+
+        // 허용할 헤더 설정
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // 쿠키 허용
+        configuration.setAllowCredentials(true);
+
+        // 노출할 헤더 설정
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+
+        // 프리플라이트 요청 캐시 시간 (1시간)
+        configuration.setMaxAge(3600L);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 }
