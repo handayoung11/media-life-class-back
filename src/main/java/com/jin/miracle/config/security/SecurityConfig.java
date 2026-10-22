@@ -10,13 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
-import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
@@ -57,8 +58,10 @@ public class SecurityConfig {
 
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/token/refresh").permitAll()
                         .anyRequest().authenticated())
                         .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
                         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -79,7 +82,6 @@ public class SecurityConfig {
     @Bean
     JwtDecoder jwtDecoder() {
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(this.key).build();
-        decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>());
         return decoder;
     }
 
@@ -101,7 +103,7 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
 
         // 노출할 헤더 설정
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Set-Cookie", "Www-Authenticate"));
 
         // 프리플라이트 요청 캐시 시간 (1시간)
         configuration.setMaxAge(3600L);

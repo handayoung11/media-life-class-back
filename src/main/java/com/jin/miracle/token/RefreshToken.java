@@ -37,4 +37,8 @@ public class RefreshToken {
     public String getValueStr() {
         return value.toString().replace("-", "");
     }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiryDate);
+    }
 }

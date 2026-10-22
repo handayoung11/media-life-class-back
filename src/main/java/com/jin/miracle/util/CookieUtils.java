@@ -6,13 +6,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import static com.jin.miracle.token.TokenExpiry.REFRESH_EXPIRY_SEC;
 
 public class CookieUtils {
-    private static boolean secured = true;
-
     public static Cookie makeSecuredCookie(String key, String value, int expiry) {
         Cookie cookie = new Cookie(key, value);
         cookie.setHttpOnly(true);
         cookie.setMaxAge(expiry);
-        cookie.setSecure(secured);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setAttribute("SameSite", "none");
         cookie.setAttribute("Partitioned", "");
@@ -21,8 +19,18 @@ public class CookieUtils {
 
     public static void configTokenCookies(String token, String refreshToken, HttpServletResponse resp) {
         Cookie cookie = makeSecuredCookie("token", token, REFRESH_EXPIRY_SEC);
-        cookie.setHttpOnly(false);
         resp.addCookie(cookie);
         resp.addCookie(makeSecuredCookie("refresh_token", refreshToken, REFRESH_EXPIRY_SEC));
+    }
+
+    public static Cookie deleteCookie(String name) {
+        Cookie cookie = makeSecuredCookie(name, null, 0);
+        cookie.setMaxAge(0);
+        return cookie;
+    }
+
+    public static void deleteTokens(HttpServletResponse resp) {
+        resp.addCookie(deleteCookie("token"));
+        resp.addCookie(deleteCookie("refresh_token"));
     }
 }
