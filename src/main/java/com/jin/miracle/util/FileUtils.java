@@ -70,4 +70,9 @@ public class FileUtils {
 
         return null;
     }
+
+    public static String getPath(FileType type, String name) {
+        if (name == null || name.isEmpty()) return "";
+        return Paths.get(type.getName(), name).toString().replace("\\", "/");
+    }
 }
