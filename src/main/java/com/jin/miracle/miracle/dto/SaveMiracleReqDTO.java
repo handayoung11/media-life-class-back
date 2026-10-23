@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor
-public class SaveMelibalReqDTO {
+public class SaveMiracleReqDTO {
     String memo;
 
     @ImageFile
@@ -35,5 +35,5 @@ public class SaveMelibalReqDTO {
     String study;
 
     @NotNull(message = "미라밸 날짜는 필수입니다.")
-    LocalDate melibalDate;
+    LocalDate miracleDate;
 }

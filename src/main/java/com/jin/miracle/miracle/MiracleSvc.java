@@ -1,6 +1,6 @@
 package com.jin.miracle.miracle;
 
-import com.jin.miracle.miracle.dto.SaveMelibalReqDTO;
+import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import com.jin.miracle.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,15 +15,15 @@ import static com.jin.miracle.util.FileUtils.save;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MeLiBalSvc {
+public class MiracleSvc {
 
-    private final MeLiBalRepo meLiBalRepo;
+    private final MiracleRepo miracleRepo;
     private final UserUtil userUtil;
 
     @Transactional
-    public Long savemeLiBal(SaveMelibalReqDTO s) {
+    public Long saveMiracle(SaveMiracleReqDTO s) {
 
-        MeLiBal melibal = MeLiBal.builder()
+        Miracle miracle = Miracle.builder()
                 .studyMin(s.getStudyMin())
                 .exerMin(s.getExerMin())
                 .mediaMin(s.getMediaMin())
@@ -31,21 +31,21 @@ public class MeLiBalSvc {
                 .exer(s.getExer())
                 .media(s.getMedia())
                 .todayMemo(s.getMemo())
-                .melibalDate(s.getMelibalDate())
+                .miracleDate(s.getMiracleDate())
                 .user(userUtil.getLogerOrThrow())
                 .build();
         try {
-            meLiBalRepo.save(melibal);
+            miracleRepo.save(miracle);
         } catch (Exception e) {
             handleDuplication(e);
         }
 
         if (s.getMediaPic() != null) {
-            String mediaPic = save(MEDIA_DIR, s.getMediaPic(), melibal.getId() + "");
-            melibal.updateMediaPic(mediaPic);
+            String mediaPic = save(MEDIA_DIR, s.getMediaPic(), miracle.getId() + "");
+            miracle.updateMediaPic(mediaPic);
         }
 
-        return melibal.getId();
+        return miracle.getId();
     }
 
     private static void handleDuplication(Exception e) {

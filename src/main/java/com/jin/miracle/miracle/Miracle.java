@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MeLiBal {
+public class Miracle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,7 +26,7 @@ public class MeLiBal {
     private String media;
     private String mediaPic;
     private String todayMemo;
-    private LocalDate melibalDate;
+    private LocalDate miracleDate;
 
     @CreationTimestamp
     private LocalDate createdAt;
@@ -36,7 +36,7 @@ public class MeLiBal {
     private Users user;
 
     @Builder
-    public MeLiBal(int studyMin, int exerMin, int mediaMin, String study, String exer, String media, String todayMemo, LocalDate melibalDate, Users user) {
+    public Miracle(int studyMin, int exerMin, int mediaMin, String study, String exer, String media, String todayMemo, LocalDate miracleDate, Users user) {
         this.studyMin = studyMin;
         this.exerMin = exerMin;
         this.mediaMin = mediaMin;
@@ -44,7 +44,7 @@ public class MeLiBal {
         this.exer = exer;
         this.media = media;
         this.todayMemo = todayMemo;
-        this.melibalDate = melibalDate;
+        this.miracleDate = miracleDate;
         this.user = user;
     }
 
