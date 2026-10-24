@@ -26,6 +26,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -62,6 +63,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/token/refresh").permitAll()
+                        .requestMatchers(new RegexRequestMatcher("/file/(media|user)/.*", "GET")).permitAll()
                         .anyRequest().authenticated())
                         .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
                         .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
