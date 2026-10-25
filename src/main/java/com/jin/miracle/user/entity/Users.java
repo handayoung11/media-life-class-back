@@ -22,6 +22,7 @@ public class Users {
     private String loginId;
     private String nickname;
     private String profile;
+    private int mediaGoal;
 
     @Enumerated(value = STRING)
     private Platform platform;
@@ -38,5 +39,9 @@ public class Users {
         this.profile = profile;
         this.platform = platform;
         role = UserRole.USER;
+    }
+
+    public void updateMediaGoal(int mediaGoal) {
+        this.mediaGoal = mediaGoal;
     }
 }

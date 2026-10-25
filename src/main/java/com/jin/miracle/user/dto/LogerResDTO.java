@@ -21,6 +21,6 @@ public class LogerResDTO {
         this.nickname = u.getNickname();
         this.profile = "file/" + getPath(USER_DIR, u.getProfile());
         this.createdAt = u.getCreatedAt();
-        this.mediaGoal = 60;
+        this.mediaGoal = u.getMediaGoal();
     }
 }
