@@ -1,12 +1,18 @@
 package com.jin.miracle.miracle;
 
+import com.jin.miracle.miracle.dto.DashboardResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import com.jin.miracle.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.jin.miracle.file.FileType.MEDIA_DIR;
 import static com.jin.miracle.util.ExUtils.makeHttpClientErrorEx;
@@ -53,5 +59,72 @@ public class MiracleSvc {
             throw makeHttpClientErrorEx(HttpStatus.UNPROCESSABLE_CONTENT, "해당 날짜에 이미 미라밸을 작성했습니다.");
         }
         throw makeHttpClientErrorEx(HttpStatus.UNPROCESSABLE_CONTENT, "DB 오류 발생");
+    }
+
+    public DashboardResDTO getDashboard() {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<Miracle> miracles = miracleRepo.findLatestRecords(userId);
+
+        long total = miracleRepo.countByUser_LoginId(userId);
+        int streakyDays = calculateCurrentStreak(miracles);
+
+        DashboardResDTO.DashboardRecentRecordDTO todayRecord = null;
+        List<DashboardResDTO.DashboardRecentRecordDTO> records = new ArrayList<>();
+
+        if (!miracles.isEmpty()) {
+            Miracle latestMiracle = miracles.get(0);
+            if (latestMiracle.isTodayOrYesterday()) {
+                todayRecord = DashboardResDTO.DashboardRecentRecordDTO.builder()
+                        .date(latestMiracle.getMiracleDate())
+                        .mediaMin(latestMiracle.getMediaMin())
+                        .exerciseMin(latestMiracle.getExerMin())
+                        .studyMin(latestMiracle.getStudyMin())
+                        .memo(latestMiracle.getTodayMemo())
+                        .build();
+            }
+
+            for (Miracle m : miracles) {
+                records.add(DashboardResDTO.DashboardRecentRecordDTO.builder()
+                        .date(m.getMiracleDate())
+                        .mediaMin(m.getMediaMin())
+                        .exerciseMin(m.getExerMin())
+                        .studyMin(m.getStudyMin())
+                        .memo(m.getTodayMemo())
+                        .build());
+            }
+        }
+
+        return DashboardResDTO.builder()
+                .summary(DashboardResDTO.DashboardSummaryDTO.builder()
+                        .totalRecords(total)
+                        .streakDays(streakyDays)
+                        .build())
+                .today(todayRecord)
+                .recentRecords(records)
+                .build();
+    }
+
+    public int calculateCurrentStreak(List<Miracle> miracles) {
+        if (miracles.isEmpty()) {
+            return 0;
+        }
+
+        // 어제, 오늘 기록 없으면 연속기록 끊긴 것임!
+        if (!miracles.get(0).isTodayOrYesterday()) {
+            return 0;
+        }
+
+        LocalDate expectedDate = miracles.get(0).getMiracleDate();
+        int streak = 0;
+
+        for (Miracle miracle : miracles) {
+            // 날짜가 예상한 날짜와 일치하면 streak 증가 후 다음 예상 날짜를 하루 전으로 세팅
+            if (miracle.getMiracleDate().equals(expectedDate)) {
+                streak++;
+                expectedDate = expectedDate.minusDays(1);
+            }
+            else break;
+        }
+        return streak;
     }
 }

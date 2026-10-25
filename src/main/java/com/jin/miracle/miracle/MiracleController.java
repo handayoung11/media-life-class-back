@@ -1,5 +1,6 @@
 package com.jin.miracle.miracle;
 
+import com.jin.miracle.miracle.dto.DashboardResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,5 +20,10 @@ public class MiracleController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Long saveMiracle(@ModelAttribute @Valid SaveMiracleReqDTO s) {
         return miracleSvc.saveMiracle(s);
+    }
+
+    @GetMapping
+    public DashboardResDTO getDashboard() {
+        return miracleSvc.getDashboard();
     }
 }

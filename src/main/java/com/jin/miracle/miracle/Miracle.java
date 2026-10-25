@@ -31,8 +31,8 @@ public class Miracle {
     @CreationTimestamp
     private LocalDate createdAt;
 
+    @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private Users user;
 
     @Builder
@@ -50,5 +50,11 @@ public class Miracle {
 
     public void updateMediaPic(String mediaPic) {
         this.mediaPic = mediaPic;
+    }
+
+    public boolean isTodayOrYesterday() {
+        if (this.miracleDate == null) return false;
+        LocalDate now = LocalDate.now();
+        return this.miracleDate.equals(now) || this.miracleDate.equals(now.minusDays(1));
     }
 }
