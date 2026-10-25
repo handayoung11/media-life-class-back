@@ -4,6 +4,7 @@ import com.jin.miracle.user.entity.Platform;
 import com.jin.miracle.user.entity.Users;
 import com.jin.miracle.user.repo.UserRepo;
 import com.jin.miracle.util.FileUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -14,7 +15,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 public class OAuth2UserSvc extends DefaultOAuth2UserService {
 
@@ -45,15 +48,32 @@ public class OAuth2UserSvc extends DefaultOAuth2UserService {
                     dbUser = new Users(id, oAuth2User.getAttribute("name"), img, Platform.GOOGLE);
                     userRepo.save(dbUser);
                 }
+            } else if (userRequest.getClientRegistration().getRegistrationId().equals(Platform.KAKAO.getRegId())) {
+                nameKey = "id";
+                String id = oAuth2User.getAttribute(nameKey).toString();
+
+                dbUser = userRepo.findByLoginId(id).orElse(null);
+
+                if (dbUser == null) {
+                    Map<String, String> prs = oAuth2User.getAttribute("properties");
+                    String profileImage = prs.get("profile_image");
+                    String img = null;
+                    if (profileImage != null) {
+                        img = FileUtils.saveImgByUrl(profileImage, id);
+                    }
+                    dbUser = new Users(id, prs.get("nickname"), img, Platform.KAKAO);
+                    userRepo.save(dbUser);
+                }
             }
+
+            return new DefaultOAuth2User(List.of(new SimpleGrantedAuthority(dbUser.getRole().toString())),
+                    oAuth2User.getAttributes(), nameKey);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("login_error"),
                     e.getMessage()
             );
         }
-
-        return new DefaultOAuth2User(List.of(new SimpleGrantedAuthority(dbUser.getRole().toString())),
-                oAuth2User.getAttributes(), nameKey);
     }
 }

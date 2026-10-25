@@ -8,6 +8,12 @@ spring:
   security:
     oauth2:
       client:
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
         registration:
           google:
             client-id: ENC(62+F0/iKBeve7kmYKtDY7/kUL9j/YI8nKn4SWV1kK+fFWgYkUKpFk3FRnWXxBDxT9cUWlcq+BGY3QmsNSdS0ZoX3can/Sbas/FTp2Qou4FJ4unF3SrWyfnM0LrKI0SupgcQlaebwF8IL/LGUmnf8zA==)
@@ -15,6 +21,15 @@ spring:
             scope:
               - profile
               - email
+          kakao:
+            client-id: ENC(rAARlmfuCQBlyoeWXRoFTynyJ6WqcYB/k1sNtfw4O0QFt9FmgAqT0STJYW/T25b4kG56DmfsnFOkMpPQVGYqQ1e4OBfMxeKIbbOlhNyfc88=)
+            client-secret: ENC(Zu4KPt//oW2ZkMqCTUB+f47F9hqfCr8SgeE2NB0L9888jePOaCIRxaunGWqX2xwC7EwTkm9nKNvkfOmrU1Akg3Qdf/YSLf+tgvfjy6EcmkU=)
+            client-authentication-method: client_secret_post
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
+            authorization-grant-type: authorization_code
+            scope:
+              - profile_nickname
+              - profile_image
 
 jwt:
   private.key: classpath:keys/app.key

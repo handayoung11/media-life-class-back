@@ -39,6 +39,7 @@ public class Users {
         this.profile = profile;
         this.platform = platform;
         role = UserRole.USER;
+        mediaGoal = 60;
     }
 
     public void updateMediaGoal(int mediaGoal) {
