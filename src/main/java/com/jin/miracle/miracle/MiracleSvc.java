@@ -54,7 +54,7 @@ public class MiracleSvc {
         return miracle.getId();
     }
 
-    private static void handleDuplication(Exception e) {
+    private void handleDuplication(Exception e) {
         if (e.getMessage().contains("Duplicate entry") && e.getMessage().contains("uk_date_user")) {
             throw makeHttpClientErrorEx(HttpStatus.UNPROCESSABLE_CONTENT, "해당 날짜에 이미 미라밸을 작성했습니다.");
         }
