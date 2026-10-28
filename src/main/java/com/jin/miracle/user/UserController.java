@@ -2,8 +2,12 @@ package com.jin.miracle.user;
 
 import com.jin.miracle.user.dto.LogerResDTO;
 import com.jin.miracle.user.dto.UpdateMeReqDTO;
+import com.jin.miracle.validator.ImageFile;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +22,12 @@ public class UserController {
     }
 
     @PatchMapping("me")
-    public void updateMe(@RequestBody UpdateMeReqDTO dto) {
+    public void updateMe(@RequestBody @Valid UpdateMeReqDTO dto) {
         userSvc.updateMe(dto);
+    }
+
+    @PatchMapping(path = "me", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public void updateProfile(@ModelAttribute @Valid @ImageFile MultipartFile profile) {
+        userSvc.updateMe(profile);
     }
 }
