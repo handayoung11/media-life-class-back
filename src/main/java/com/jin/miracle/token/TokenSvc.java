@@ -26,6 +26,8 @@ public class TokenSvc {
     private final RefreshTokenRepo refreshTokenRepo;
     private final NimbusJwtDecoder decoder;
     private final JwtTimestampValidator jwtValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
+    private final String authClaimName = "rls";
+
 
     public TokenSvc(JwtEncoder encoder, RefreshTokenRepo refreshTokenRepo, @Value("${jwt.public.key}") RSAPublicKey key) {
         this.encoder = encoder;
@@ -48,7 +50,7 @@ public class TokenSvc {
                 .expiresAt(now.plusSeconds(TokenExpiry.JWT_EXPIRY_SEC))
                 .id(token.getId().toString())
                 .subject(userId)
-                .claim("rls", roles)
+                .claim(authClaimName, roles)
                 .build();
 
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -70,7 +72,7 @@ public class TokenSvc {
         }
 
         if (!jwtValidator.validate(jwt).hasErrors()) {
-            throw new HttpClientErrorException(HttpStatus.UNPROCESSABLE_ENTITY, "jwt is valid");
+            throw new HttpClientErrorException(HttpStatus.UNPROCESSABLE_CONTENT, "jwt is valid");
         }
 
         String id = jwt.getId();
@@ -82,7 +84,7 @@ public class TokenSvc {
         }
 
         newRefreshToken.generate();
-        String newToken = generateToken(jwt.getClaimAsString("rls"), jwt.getSubject(), newRefreshToken);
+        String newToken = generateToken(jwt.getClaimAsString(authClaimName), jwt.getSubject(), newRefreshToken);
         return new String[] {newToken, newRefreshToken.getValueStr()};
     }
 }

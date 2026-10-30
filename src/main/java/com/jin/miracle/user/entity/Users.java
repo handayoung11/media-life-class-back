@@ -22,13 +22,16 @@ public class Users {
     private String loginId;
     private String nickname;
     private String profile;
-    private int mediaGoal;
+    private Integer mediaGoal;
 
     @Enumerated(value = STRING)
     private Platform platform;
 
     @Enumerated(value = STRING)
     private UserRole role;
+
+    @Enumerated(value = STRING)
+    private UserStatus status;
 
     @CreationTimestamp
     private LocalDate createdAt;
@@ -38,7 +41,8 @@ public class Users {
         this.nickname = nickname;
         this.profile = profile;
         this.platform = platform;
-        role = UserRole.USER;
+        status = UserStatus.PENDING;
+        role = UserRole.GUEST;
         mediaGoal = 60;
     }
 
@@ -52,5 +56,10 @@ public class Users {
 
     public void updateProfile(String profile) {
         this.profile = profile;
+    }
+
+    public void completeOnboarding() {
+        role = UserRole.USER;
+        status = UserStatus.ACTIVE;
     }
 }
