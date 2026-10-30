@@ -73,6 +73,6 @@ public class FileUtils {
 
     public static String getPath(FileType type, String name) {
         if (name == null || name.isEmpty()) return "";
-        return Paths.get(type.getName(), name).toString().replace("\\", "/");
+        return Paths.get("file", type.getName(), name).toString().replace("\\", "/");
     }
 }

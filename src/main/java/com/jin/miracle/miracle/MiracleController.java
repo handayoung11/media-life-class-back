@@ -1,9 +1,11 @@
 package com.jin.miracle.miracle;
 
 import com.jin.miracle.miracle.dto.DashboardResDTO;
+import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,5 +27,10 @@ public class MiracleController {
     @GetMapping("/dashboard")
     public DashboardResDTO getDashboard() {
         return miracleSvc.getDashboard();
+    }
+
+    @GetMapping
+    public MiracleFeedResDTO getMiracles(Pageable p) {
+        return miracleSvc.getMiracles(p);
     }
 }

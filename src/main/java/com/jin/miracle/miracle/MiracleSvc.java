@@ -1,10 +1,15 @@
 package com.jin.miracle.miracle;
 
+import com.jin.miracle.file.FileType;
 import com.jin.miracle.miracle.dto.DashboardResDTO;
+import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
+import com.jin.miracle.util.FileUtils;
 import com.jin.miracle.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -126,5 +131,25 @@ public class MiracleSvc {
             else break;
         }
         return streak;
+    }
+
+    public MiracleFeedResDTO getMiracles(Pageable p) {
+        Slice<Miracle> miracles = miracleRepo.findWithUser(p);
+        List<MiracleFeedResDTO.FeedsDTO> feeds = miracles.stream().map(m -> MiracleFeedResDTO.FeedsDTO.builder()
+                .id(m.getId())
+                .author(m.getUser().getNickname())
+                .avatarUrl(FileUtils.getPath(FileType.USER_DIR, m.getUser().getProfile()))
+                .exerMin(m.getExerMin())
+                .studyMin(m.getStudyMin())
+                .mediaMin(m.getMediaMin())
+                .memo(m.getTodayMemo())
+                .comments(new ArrayList<>())
+                .build()
+        ).toList();
+        return MiracleFeedResDTO.builder()
+                .feeds(feeds)
+                .currentPage(miracles.getNumber())
+                .hasNext(miracles.hasNext())
+                .build();
     }
 }

@@ -20,7 +20,7 @@ public class LogerResDTO {
         this.id = u.getId();
         this.nickname = u.getNickname();
         if (u.getProfile() != null && !u.getProfile().isEmpty())
-            this.profile = "file/" + getPath(USER_DIR, u.getProfile());
+            this.profile = getPath(USER_DIR, u.getProfile());
         this.createdAt = u.getCreatedAt();
         this.mediaGoal = u.getMediaGoal();
     }
