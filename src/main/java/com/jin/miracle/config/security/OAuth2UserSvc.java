@@ -69,6 +69,23 @@ public class OAuth2UserSvc extends DefaultOAuth2UserService {
             return new DefaultOAuth2User(List.of(new SimpleGrantedAuthority(dbUser.getRole().toString())),
                     oAuth2User.getAttributes(), nameKey);
         } catch (Exception e) {
+            // 닉네임 유니크 제약조건 위배 감지
+            if (e.getMessage() != null && e.getMessage().contains("nickname_UNIQUE")) {
+                log.warn("닉네임 중복 발생으로 인해 null 처리 후 회원가입을 재시도합니다. ID: {}", dbUser.getLoginId());
+                try {
+                    dbUser.updateNickname(null);
+                    dbUser = userRepo.save(dbUser);
+
+                    return new DefaultOAuth2User(
+                            List.of(new SimpleGrantedAuthority(dbUser.getRole().toString())),
+                            oAuth2User.getAttributes(),
+                            nameKey
+                    );
+                } catch (Exception retryEx) {
+                    log.error("닉네임 null 처리 후 재시도 중 에러 발생: {}", retryEx.getMessage());
+                    throw new OAuth2AuthenticationException(new OAuth2Error("login_error"), retryEx.getMessage());
+                }
+            }
             log.error(e.getMessage());
             throw new OAuth2AuthenticationException(
                     new OAuth2Error("login_error"),
