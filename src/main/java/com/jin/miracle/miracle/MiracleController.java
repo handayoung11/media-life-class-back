@@ -22,7 +22,7 @@ public class MiracleController {
         return miracleSvc.saveMiracle(s);
     }
 
-    @GetMapping
+    @GetMapping("/dashboard")
     public DashboardResDTO getDashboard() {
         return miracleSvc.getDashboard();
     }
