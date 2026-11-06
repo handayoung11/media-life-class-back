@@ -5,6 +5,9 @@ import com.jin.miracle.miracle.dto.DashboardResDTO;
 import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import com.jin.miracle.util.FileUtils;
+import com.jin.miracle.miracle_like.MiracleLike;
+import com.jin.miracle.miracle_like.MiracleLikeRepo;
+import com.jin.miracle.user.entity.Users;
 import com.jin.miracle.util.UserUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,7 @@ import static com.jin.miracle.util.FileUtils.save;
 public class MiracleSvc {
 
     private final MiracleRepo miracleRepo;
+    private final MiracleLikeRepo miracleLikeRepo;
     private final UserUtil userUtil;
 
     @Transactional
@@ -151,5 +155,21 @@ public class MiracleSvc {
                 .currentPage(miracles.getNumber())
                 .hasNext(miracles.hasNext())
                 .build();
+
+    public boolean likeMiracle(Long id) {
+        Users u = userUtil.getLogerOrThrow();
+        Miracle m = miracleRepo.findById(id)
+                .orElseThrow(() -> makeHttpClientErrorEx(HttpStatus.NOT_FOUND, "miracle is not found."));
+        MiracleLike miracleLike = miracleLikeRepo.findByMiracleAndUser(m, u)
+                .orElse(null);
+
+        if (miracleLike != null) {
+            miracleLikeRepo.delete(miracleLike);
+            return false;
+        }
+        else {
+            miracleLikeRepo.save(new MiracleLike(m, u));
+            return true;
+        }
     }
 }

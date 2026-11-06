@@ -33,4 +33,9 @@ public class MiracleController {
     public MiracleFeedResDTO getMiracles(Pageable p) {
         return miracleSvc.getMiracles(p);
     }
+
+    @PostMapping("like/{id}")
+    public boolean likeMiracle(@PathVariable Long id) {
+        return miracleSvc.likeMiracle(id);
+    }
 }
