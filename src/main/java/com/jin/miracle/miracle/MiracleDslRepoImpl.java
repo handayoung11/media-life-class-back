@@ -1,6 +1,7 @@
 package com.jin.miracle.miracle;
 
 import com.jin.miracle.file.FileType;
+import com.jin.miracle.miracle.dto.MiracleFeedDetailResDTO;
 import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.user.entity.Users;
 import com.jin.miracle.util.FileUtils;
@@ -9,6 +10,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -28,18 +30,10 @@ public class MiracleDslRepoImpl implements MiracleDslRepo {
 
     @Transactional
     public MiracleFeedResDTO searchMiracles(Pageable pageable) {
-
         BooleanExpression likedExpr = likedExpr();
-        List<Tuple> res = queryFactory
-                .select(miracle,
-                        miracleLike.countDistinct(),
-                        likedExpr)
-                .from(miracle)
-                .join(miracle.user).fetchJoin()
-                .leftJoin(miracle.likes, miracleLike)
+        List<Tuple> res = selectMiracleData(likedExpr)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
-                .groupBy(miracle.id)
                 .orderBy(miracle.miracleDate.desc(), miracle.id.desc())
                 .fetch();
 
@@ -72,6 +66,47 @@ public class MiracleDslRepoImpl implements MiracleDslRepo {
                 .currentPage(pageable.getPageNumber())
                 .hasNext(hasNext)
                 .build();
+    }
+
+    @Transactional
+    public MiracleFeedDetailResDTO searchMiracle(Long id) {
+        BooleanExpression likedExpr = likedExpr();
+        Tuple t = selectMiracleData(likedExpr)
+                .where(miracle.id.eq(id))
+                .fetchOne();
+
+        Miracle m = t.get(miracle);
+        Long likes = t.get(miracleLike.countDistinct());
+        Boolean liked = t.get(likedExpr);
+
+        return MiracleFeedDetailResDTO.builder()
+                .id(m.getId())
+                .author(m.getUser().getNickname())
+                .avatarUrl(FileUtils.getPath(FileType.USER_DIR, m.getUser().getProfile()))
+                .memo(m.getTodayMemo())
+                .media(m.getMedia())
+                .exer(m.getExer())
+                .study(m.getStudy())
+                .mediaPic(FileUtils.getPath(FileType.MEDIA_DIR, m.getMediaPic()))
+                .comments(new ArrayList<>())
+                .mediaMin(m.getMediaMin())
+                .exerMin(m.getExerMin())
+                .studyMin(m.getStudyMin())
+                .likes(likes)
+                .liked(liked)
+                .createdAt(m.getCreatedAt())
+                .build();
+    }
+
+    private JPAQuery<Tuple> selectMiracleData(BooleanExpression likedExpr) {
+        return queryFactory
+                .select(miracle,
+                        miracleLike.countDistinct(),
+                        likedExpr)
+                .from(miracle)
+                .join(miracle.user).fetchJoin()
+                .leftJoin(miracle.likes, miracleLike)
+                .groupBy(miracle.id);
     }
 
     private BooleanExpression likedExpr() {

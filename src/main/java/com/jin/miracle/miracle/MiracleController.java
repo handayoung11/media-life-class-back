@@ -1,6 +1,7 @@
 package com.jin.miracle.miracle;
 
 import com.jin.miracle.miracle.dto.DashboardResDTO;
+import com.jin.miracle.miracle.dto.MiracleFeedDetailResDTO;
 import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import jakarta.validation.Valid;
@@ -32,6 +33,11 @@ public class MiracleController {
     @GetMapping
     public MiracleFeedResDTO getMiracles(Pageable p) {
         return miracleSvc.getMiracles(p);
+    }
+
+    @GetMapping("{id}")
+    public MiracleFeedDetailResDTO getMiracle(@PathVariable Long id) {
+        return miracleSvc.getMiracle(id);
     }
 
     @PostMapping("like/{id}")

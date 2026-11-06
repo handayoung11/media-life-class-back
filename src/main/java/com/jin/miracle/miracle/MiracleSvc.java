@@ -1,6 +1,7 @@
 package com.jin.miracle.miracle;
 
 import com.jin.miracle.miracle.dto.DashboardResDTO;
+import com.jin.miracle.miracle.dto.MiracleFeedDetailResDTO;
 import com.jin.miracle.miracle.dto.MiracleFeedResDTO;
 import com.jin.miracle.miracle.dto.SaveMiracleReqDTO;
 import com.jin.miracle.miracle_like.MiracleLike;
@@ -153,5 +154,9 @@ public class MiracleSvc {
             miracleLikeRepo.save(new MiracleLike(m, u));
             return true;
         }
+    }
+
+    public MiracleFeedDetailResDTO getMiracle(Long id) {
+        return miracleRepo.searchMiracle(id);
     }
 }
