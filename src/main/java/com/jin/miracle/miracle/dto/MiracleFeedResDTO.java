@@ -3,6 +3,7 @@ package com.jin.miracle.miracle.dto;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -26,5 +27,8 @@ public class MiracleFeedResDTO {
         int mediaMin;
         int exerMin;
         int studyMin;
+        long likes;
+        boolean liked;
+        LocalDateTime createdAt;
     }
 }

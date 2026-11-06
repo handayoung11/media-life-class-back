@@ -1,5 +1,6 @@
 package com.jin.miracle.miracle;
 
+import com.jin.miracle.miracle_like.MiracleLike;
 import com.jin.miracle.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,6 +10,9 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -29,11 +33,14 @@ public class Miracle {
     private LocalDate miracleDate;
 
     @CreationTimestamp
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
+
+    @OneToMany(mappedBy = "miracle")
+    private List<MiracleLike> likes = new ArrayList<>();
 
     @Builder
     public Miracle(int studyMin, int exerMin, int mediaMin, String study, String exer, String media, String todayMemo, LocalDate miracleDate, Users user) {
